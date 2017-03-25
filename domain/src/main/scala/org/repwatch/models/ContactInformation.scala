@@ -1,5 +1,6 @@
 package org.repwatch.models
 
-class ContactInformation(phoneNumber: PhoneNumber) {
+class ContactInformation(emailAddress: EmailAddress,
+                         phoneNumber: PhoneNumber) {
 
 }

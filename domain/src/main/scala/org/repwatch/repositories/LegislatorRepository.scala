@@ -5,5 +5,5 @@ import org.repwatch.models.{GeoCoordinate, Legislator}
 import scala.concurrent.Future
 
 trait LegislatorRepository {
-  def locate(location: GeoCoordinate) : Future[Legislator]
+  def locate(location: GeoCoordinate) : Future[Option[Legislator]]
 }
