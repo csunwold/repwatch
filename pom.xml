@@ -6,6 +6,7 @@
     <packaging>pom</packaging>
     <name>repwatch</name>
     <modules>
+        <module>alexa</module>
         <module>api</module>
         <module>domain</module>
         <module>providers</module>
