@@ -3,9 +3,12 @@ package org.repwatch.alexa
 import java.util
 
 import com.amazon.speech.speechlet.lambda.SpeechletRequestStreamHandler
+import org.repwatch.repositories.InMemoryUserRepository
 
 class RepwatchSpeechletRequestStreamHandler extends {
-  val speechlet = new RepwatchSpeechlet
+  val userRepository = new InMemoryUserRepository
+
+  val speechlet = new RepwatchSpeechlet(userRepository)
   val applicationIds = new util.HashSet[String]
 
 } with SpeechletRequestStreamHandler(speechlet, applicationIds)
