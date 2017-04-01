@@ -4,6 +4,7 @@ import com.amazon.speech.speechlet._
 import com.amazon.speech.ui.{PlainTextOutputSpeech, Reprompt}
 import org.repwatch.alexa.handlers.{FindSenatorsIntentHandler, UnknownIntentHandler}
 import org.repwatch.config.ApplicationConfig
+import org.repwatch.models
 import org.repwatch.repositories.UserRepository
 
 import scala.concurrent.Await
@@ -19,26 +20,29 @@ class RepwatchSpeechlet(config: ApplicationConfig, userRepository: UserRepositor
   override def onSessionStarted(sessionStartedRequest: SessionStartedRequest, session: Session): Unit = ???
 
   override def onIntent(intentRequest: IntentRequest, session: Session): SpeechletResponse = {
+    findUser(session.getUser) match {
+      case Some(user) => handleAuthedIntent(intentRequest, user)
+      case None => handleUnAuthedIntent
+    }
+  }
 
-    val user = session.getUser
+  private def handleUnAuthedIntent = {
+    val output = new PlainTextOutputSpeech
+    output.setText("First, I need to know your zip code.")
 
-    val response = new SpeechletResponse
-    val maybeUser = findUser(user)
-    if (maybeUser.isDefined) {
-      intentRequest.getIntent.getName match {
-        case RepwatchSpeechlet.FindSenators => FindSenatorsIntentHandler.handle(new FindSenatorsIntent(intentRequest), config, maybeUser.get)
-        case _ => UnknownIntentHandler.handle(new UnknownIntent(intentRequest))
-      }
-    } else {
-      val output = new PlainTextOutputSpeech
-      output.setText("First, I need to know your zip code.")
+    val repromptSpeech = new PlainTextOutputSpeech
+    repromptSpeech.setText("You can say, my zip code is ")
+    // TODO - Give a zip code response
+    val reprompt = new Reprompt
+    reprompt.setOutputSpeech(repromptSpeech)
 
-      val repromptSpeech = new PlainTextOutputSpeech
-      repromptSpeech.setText("You can say, my zip code is ") // TODO - Give a zip code response
-      val reprompt = new Reprompt
-      reprompt.setOutputSpeech(repromptSpeech)
+    SpeechletResponse.newAskResponse(output, reprompt)
+  }
 
-      SpeechletResponse.newAskResponse(output, reprompt)
+  private def handleAuthedIntent(intentRequest: IntentRequest, user: models.User) = {
+    intentRequest.getIntent.getName match {
+      case RepwatchSpeechlet.FindSenators => FindSenatorsIntentHandler.handle(new FindSenatorsIntent(intentRequest), config, user)
+      case _ => UnknownIntentHandler.handle(new UnknownIntent(intentRequest))
     }
   }
 
