@@ -3,7 +3,7 @@ package org.repwatch.models
 sealed trait Legislator {
   def name: Name
   def contactInformation: ContactInformation
-  def district: District
+  //def district: District
 
   override def toString: String = {
     name.toString
@@ -11,9 +11,9 @@ sealed trait Legislator {
 }
 
 case class Senator(contactInformation: ContactInformation,
-                   district: District,
+                   //district: District,
                    name: Name) extends Legislator
 
 case class Representative(contactInformation: ContactInformation,
-                          district: District,
+                          //district: District,
                           name: Name) extends Legislator
