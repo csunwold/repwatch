@@ -7,6 +7,9 @@ import scala.concurrent.Future
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
+// TODO - Handle vacant offices
+// TODO - Unit Tests
+// TODO - Add mapping of other legislator information from response
 class GoogleLegislatorRepository(client: GoogleCivicApi) extends LegislatorRepository {
   override def locateRepresentative(zipCode: ZipCode): Future[Option[Representative]] = {
     for (response <- client.findRepresentative(zipCode))

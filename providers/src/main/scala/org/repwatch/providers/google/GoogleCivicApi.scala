@@ -21,6 +21,7 @@ class GoogleCivicApi(apiKey: ApiKey) {
     getRepresentativeInfoQueryResponse(role = "legislatorUpperBody", zipCode = zipCode)
   }
 
+  // TODO - convert role to case class type
   private def getRepresentativeInfoQueryResponse(role: String, zipCode: ZipCode) = {
     val svc = url("https://www.googleapis.com/civicinfo/v2/representatives")
       .addQueryParameter("address", zipCode.value)

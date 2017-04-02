@@ -9,6 +9,7 @@ import org.repwatch.repositories.{GoogleLegislatorRepository, InMemoryUserReposi
 
 class RepwatchSpeechletRequestStreamHandler extends {
 
+  // TODO - Create and wire in DynamoDB based user repository
   val userRepository = new InMemoryUserRepository
   val config = new ApplicationConfig
   val googleApiKey = new ApiKey(config.googleApiKey)

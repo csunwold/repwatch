@@ -13,7 +13,7 @@ import org.scalatest.{AsyncFreeSpec, Matchers}
   * and setup in the repwatch.conf file for these to run successfully.
   *
   * Because they are complete end to end tests the data will change from time to time as elections and other vacancies
-  * happen. These tests should only be ran as needed. 
+  * happen. These tests should only be ran as needed.
   */
 class RepwatchSpeechletSpec extends AsyncFreeSpec with Matchers {
   var config : ApplicationConfig = new ApplicationConfig
