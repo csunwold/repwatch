@@ -14,29 +14,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class GoogleCivicApi(apiKey: ApiKey) {
   def findRepresentative(zipCode: ZipCode) : Future[RepresentativeInfoQueryResponse] = {
-    val svc = url("https://www.googleapis.com/civicinfo/v2/representatives")
-      .addQueryParameter("address", zipCode.value)
-      .addQueryParameter("key", apiKey.key)
-      .addQueryParameter("includeOffices", "true")
-      .addQueryParameter("roles", "legislatorLowerBody")
-
-    val responseBody = Http(svc OK as.String)
-
-    responseBody
-      .map(body => {
-        val json = JsonParser.parse(body)
-        implicit val formats = DefaultFormats
-
-        json.extract[RepresentativeInfoQueryResponse]
-      })
+    getRepresentativeInfoQueryResponse(role = "legislatorLowerBody", zipCode = zipCode)
   }
 
   def findSenators(zipCode: ZipCode) : Future[RepresentativeInfoQueryResponse] = {
+    getRepresentativeInfoQueryResponse(role = "legislatorUpperBody", zipCode = zipCode)
+  }
+
+  private def getRepresentativeInfoQueryResponse(role: String, zipCode: ZipCode) = {
     val svc = url("https://www.googleapis.com/civicinfo/v2/representatives")
       .addQueryParameter("address", zipCode.value)
       .addQueryParameter("key", apiKey.key)
       .addQueryParameter("includeOffices", "true")
-      .addQueryParameter("roles", "legislatorUpperBody")
+      .addQueryParameter("roles", role)
 
     val responseBody = Http(svc OK as.String)
 
