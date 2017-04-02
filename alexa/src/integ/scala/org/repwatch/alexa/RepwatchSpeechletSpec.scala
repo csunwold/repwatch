@@ -4,16 +4,20 @@ import com.amazon.speech.ui.PlainTextOutputSpeech
 import org.repwatch.builders.TestObjectBuilders.{buildIntent, buildIntentRequest, buildSession}
 import org.repwatch.config.ApplicationConfig
 import org.repwatch.models.{User, UserId, ZipCode}
-import org.repwatch.repositories.InMemoryUserRepository
+import org.repwatch.providers.google.{ApiKey, GoogleCivicApi}
+import org.repwatch.repositories.{GoogleLegislatorRepository, InMemoryUserRepository}
 import org.scalatest.{FreeSpec, Matchers}
 
 class RepwatchSpeechletSpec extends FreeSpec with Matchers {
   var config : ApplicationConfig = new ApplicationConfig
+  val googleApiKey = new ApiKey(config.googleApiKey)
+  val googleClient = new GoogleCivicApi(googleApiKey)
+  val legislatorRepository = new GoogleLegislatorRepository(googleClient)
 
   "RepwatchSpeechlet" - {
     "Given a FindSenatorIntent without a recognized user" - {
       "Should ask for a zip code" in {
-        val speechlet = new RepwatchSpeechlet(config, new InMemoryUserRepository)
+        val speechlet = new RepwatchSpeechlet(legislatorRepository, new InMemoryUserRepository)
 
         val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchSpeechlet.FindSenators))
         val session = buildSession(userId = "385452ca-afee-4c18-af2c-6589d54b29b8")
@@ -33,7 +37,7 @@ class RepwatchSpeechletSpec extends FreeSpec with Matchers {
         val user = User(id = UserId("79a75932-c1d1-4a81-9b90-ebd019561d48"), zipCode = ZipCode("98101"))
         userRepository.save(user)
 
-        val speechlet = new RepwatchSpeechlet(config, userRepository)
+        val speechlet = new RepwatchSpeechlet(legislatorRepository, userRepository)
 
         val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchSpeechlet.FindSenators))
         val session = buildSession(userId = user.id.value)
@@ -53,7 +57,7 @@ class RepwatchSpeechletSpec extends FreeSpec with Matchers {
         val user = User(id = UserId("79a75932-c1d1-4a81-9b90-ebd019561d48"), zipCode = ZipCode("97080"))
         userRepository.save(user)
 
-        val speechlet = new RepwatchSpeechlet(config, userRepository)
+        val speechlet = new RepwatchSpeechlet(legislatorRepository, userRepository)
 
         val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchSpeechlet.FindSenators))
         val session = buildSession(userId = user.id.value)
