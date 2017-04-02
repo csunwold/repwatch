@@ -19,7 +19,7 @@ class RepwatchSpeechletSpec extends FreeSpec with Matchers {
       "Should ask for a zip code" in {
         val speechlet = new RepwatchSpeechlet(legislatorRepository, new InMemoryUserRepository)
 
-        val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchSpeechlet.FindSenators))
+        val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchIntent.Intents.FindSenators))
         val session = buildSession(userId = "385452ca-afee-4c18-af2c-6589d54b29b8")
         val response = speechlet.onIntent(intentRequest, session)
 
@@ -39,7 +39,7 @@ class RepwatchSpeechletSpec extends FreeSpec with Matchers {
 
         val speechlet = new RepwatchSpeechlet(legislatorRepository, userRepository)
 
-        val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchSpeechlet.FindSenators))
+        val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchIntent.Intents.FindSenators))
         val session = buildSession(userId = user.id.value)
         val response = speechlet.onIntent(intentRequest, session)
 
@@ -59,7 +59,7 @@ class RepwatchSpeechletSpec extends FreeSpec with Matchers {
 
         val speechlet = new RepwatchSpeechlet(legislatorRepository, userRepository)
 
-        val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchSpeechlet.FindSenators))
+        val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchIntent.Intents.FindSenators))
         val session = buildSession(userId = user.id.value)
         val response = speechlet.onIntent(intentRequest, session)
 
@@ -68,6 +68,26 @@ class RepwatchSpeechletSpec extends FreeSpec with Matchers {
         val text = outputSpeech.getText
 
         text should be ("Your senators are Jeff Merkley and Ron Wyden")
+      }
+    }
+
+    "Given a FindRepresentativeIntent in 99203" - {
+      "Should return congresswoman Cathy McMorris Rodgers" in {
+        val userRepository = new InMemoryUserRepository
+        val user = User(id = UserId("79a75932-c1d1-4a81-9b90-ebd019561d48"), zipCode = ZipCode("99203"))
+        userRepository.save(user)
+
+        val speechlet = new RepwatchSpeechlet(legislatorRepository, userRepository)
+
+        val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchIntent.Intents.FindRepresentative))
+        val session = buildSession(userId = user.id.value)
+        val response = speechlet.onIntent(intentRequest, session)
+
+        response.getOutputSpeech.getClass should be (classOf[PlainTextOutputSpeech])
+        val outputSpeech = response.getOutputSpeech.asInstanceOf[PlainTextOutputSpeech]
+        val text = outputSpeech.getText
+
+        text should be ("Your representative in congress is Cathy McMorris Rodgers")
       }
     }
   }

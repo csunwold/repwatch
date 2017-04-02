@@ -2,16 +2,12 @@ package org.repwatch.alexa
 
 import com.amazon.speech.speechlet._
 import com.amazon.speech.ui.{PlainTextOutputSpeech, Reprompt}
-import org.repwatch.alexa.handlers.{FindSenatorsIntentHandler, UnknownIntentHandler}
+import org.repwatch.alexa.handlers.{FindRepresentativeIntentHandler, FindSenatorsIntentHandler, UnknownIntentHandler}
 import org.repwatch.models
 import org.repwatch.repositories.{LegislatorRepository, UserRepository}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-
-object RepwatchSpeechlet {
-  val FindSenators = "FindSenators"
-}
 
 class RepwatchSpeechlet(legislatorRepository: LegislatorRepository, userRepository: UserRepository) extends Speechlet {
   override def onSessionEnded(sessionEndedRequest: SessionEndedRequest, session: Session): Unit = ???
@@ -40,7 +36,10 @@ class RepwatchSpeechlet(legislatorRepository: LegislatorRepository, userReposito
 
   private def handleAuthedIntent(intentRequest: IntentRequest, user: models.User) = {
     intentRequest.getIntent.getName match {
-      case RepwatchSpeechlet.FindSenators => FindSenatorsIntentHandler.handle(new FindSenatorsIntent(intentRequest), legislatorRepository, user)
+      case RepwatchIntent.Intents.FindSenators =>
+        FindSenatorsIntentHandler.handle(new FindSenatorsIntent(intentRequest), legislatorRepository, user)
+      case RepwatchIntent.Intents.FindRepresentative =>
+        FindRepresentativeIntentHandler.handle(new FindRepresentativeIntent(intentRequest), legislatorRepository, user)
       case _ => UnknownIntentHandler.handle(new UnknownIntent(intentRequest))
     }
   }
