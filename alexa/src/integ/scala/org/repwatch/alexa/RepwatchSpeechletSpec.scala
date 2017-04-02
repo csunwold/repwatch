@@ -6,9 +6,9 @@ import org.repwatch.config.ApplicationConfig
 import org.repwatch.models.{User, UserId, ZipCode}
 import org.repwatch.providers.google.{ApiKey, GoogleCivicApi}
 import org.repwatch.repositories.{GoogleLegislatorRepository, InMemoryUserRepository}
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.{AsyncFreeSpec, Matchers}
 
-class RepwatchSpeechletSpec extends FreeSpec with Matchers {
+class RepwatchSpeechletSpec extends AsyncFreeSpec with Matchers {
   var config : ApplicationConfig = new ApplicationConfig
   val googleApiKey = new ApiKey(config.googleApiKey)
   val googleClient = new GoogleCivicApi(googleApiKey)
@@ -35,19 +35,21 @@ class RepwatchSpeechletSpec extends FreeSpec with Matchers {
       "Should return Senators Maria Cantwell and Patty Murray" in {
         val userRepository = new InMemoryUserRepository
         val user = User(id = UserId("79a75932-c1d1-4a81-9b90-ebd019561d48"), zipCode = ZipCode("98101"))
-        userRepository.save(user)
+        userRepository
+          .save(user)
+          .map(_ => {
+            val speechlet = new RepwatchSpeechlet(legislatorRepository, userRepository)
 
-        val speechlet = new RepwatchSpeechlet(legislatorRepository, userRepository)
+            val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchIntent.Intents.FindSenators))
+            val session = buildSession(userId = user.id.value)
+            val response = speechlet.onIntent(intentRequest, session)
 
-        val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchIntent.Intents.FindSenators))
-        val session = buildSession(userId = user.id.value)
-        val response = speechlet.onIntent(intentRequest, session)
+            response.getOutputSpeech.getClass should be (classOf[PlainTextOutputSpeech])
+            val outputSpeech = response.getOutputSpeech.asInstanceOf[PlainTextOutputSpeech]
+            val text = outputSpeech.getText
 
-        response.getOutputSpeech.getClass should be (classOf[PlainTextOutputSpeech])
-        val outputSpeech = response.getOutputSpeech.asInstanceOf[PlainTextOutputSpeech]
-        val text = outputSpeech.getText
-
-        text should be ("Your senators are Maria Cantwell and Patty Murray")
+            text should be ("Your senators are Maria Cantwell and Patty Murray")
+          })
       }
     }
 
@@ -55,19 +57,21 @@ class RepwatchSpeechletSpec extends FreeSpec with Matchers {
       "Should return Senators Ron Wyden and Jeff Merkley" in {
         val userRepository = new InMemoryUserRepository
         val user = User(id = UserId("79a75932-c1d1-4a81-9b90-ebd019561d48"), zipCode = ZipCode("97080"))
-        userRepository.save(user)
+        userRepository
+          .save(user)
+          .map(_ => {
+            val speechlet = new RepwatchSpeechlet(legislatorRepository, userRepository)
 
-        val speechlet = new RepwatchSpeechlet(legislatorRepository, userRepository)
+            val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchIntent.Intents.FindSenators))
+            val session = buildSession(userId = user.id.value)
+            val response = speechlet.onIntent(intentRequest, session)
 
-        val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchIntent.Intents.FindSenators))
-        val session = buildSession(userId = user.id.value)
-        val response = speechlet.onIntent(intentRequest, session)
+            response.getOutputSpeech.getClass should be (classOf[PlainTextOutputSpeech])
+            val outputSpeech = response.getOutputSpeech.asInstanceOf[PlainTextOutputSpeech]
+            val text = outputSpeech.getText
 
-        response.getOutputSpeech.getClass should be (classOf[PlainTextOutputSpeech])
-        val outputSpeech = response.getOutputSpeech.asInstanceOf[PlainTextOutputSpeech]
-        val text = outputSpeech.getText
-
-        text should be ("Your senators are Jeff Merkley and Ron Wyden")
+            text should be ("Your senators are Jeff Merkley and Ron Wyden")
+          })
       }
     }
 
@@ -75,19 +79,21 @@ class RepwatchSpeechletSpec extends FreeSpec with Matchers {
       "Should return congresswoman Cathy McMorris Rodgers" in {
         val userRepository = new InMemoryUserRepository
         val user = User(id = UserId("79a75932-c1d1-4a81-9b90-ebd019561d48"), zipCode = ZipCode("99203"))
-        userRepository.save(user)
+        userRepository
+          .save(user)
+          .map(_ => {
+            val speechlet = new RepwatchSpeechlet(legislatorRepository, userRepository)
 
-        val speechlet = new RepwatchSpeechlet(legislatorRepository, userRepository)
+            val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchIntent.Intents.FindRepresentative))
+            val session = buildSession(userId = user.id.value)
+            val response = speechlet.onIntent(intentRequest, session)
 
-        val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchIntent.Intents.FindRepresentative))
-        val session = buildSession(userId = user.id.value)
-        val response = speechlet.onIntent(intentRequest, session)
+            response.getOutputSpeech.getClass should be (classOf[PlainTextOutputSpeech])
+            val outputSpeech = response.getOutputSpeech.asInstanceOf[PlainTextOutputSpeech]
+            val text = outputSpeech.getText
 
-        response.getOutputSpeech.getClass should be (classOf[PlainTextOutputSpeech])
-        val outputSpeech = response.getOutputSpeech.asInstanceOf[PlainTextOutputSpeech]
-        val text = outputSpeech.getText
-
-        text should be ("Your representative in congress is Cathy McMorris Rodgers")
+            text should be ("Your representative in congress is Cathy McMorris Rodgers")
+          })
       }
     }
   }
