@@ -8,6 +8,13 @@ import org.repwatch.providers.google.{ApiKey, GoogleCivicApi}
 import org.repwatch.repositories.{GoogleLegislatorRepository, InMemoryUserRepository}
 import org.scalatest.{AsyncFreeSpec, Matchers}
 
+/**
+  * These are complete integration tests that exercise the entire code path. You must have valid API keys created
+  * and setup in the repwatch.conf file for these to run successfully.
+  *
+  * Because they are complete end to end tests the data will change from time to time as elections and other vacancies
+  * happen. These tests should only be ran as needed. 
+  */
 class RepwatchSpeechletSpec extends AsyncFreeSpec with Matchers {
   var config : ApplicationConfig = new ApplicationConfig
   val googleApiKey = new ApiKey(config.googleApiKey)
