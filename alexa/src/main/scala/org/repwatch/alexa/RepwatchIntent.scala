@@ -6,6 +6,7 @@ object RepwatchIntent {
   object Intents {
     val FindSenators = "FindSenators"
     val FindRepresentative = "FindRepresentative"
+    val SetZipCodeIntent = "SetZipCode"
   }
 }
 sealed trait RepwatchIntent {
