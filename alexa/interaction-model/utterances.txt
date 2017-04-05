@@ -1,0 +1,11 @@
+FindRepresentative Who represents me in the house
+FindRepresentative Who is my congress person
+FindRepresentative Who is my representative
+
+FindSenators Who are my senators
+FindSenators Who represents me in the senate
+FindSenators Who are the senators in my state
+
+SetZipCode My zip code is {ZipCode}
+SetZipCode I live in {ZipCode}
+SetZipCode I live at {ZipCode}
