@@ -2,7 +2,7 @@ package org.repwatch.alexa
 
 import com.amazon.speech.speechlet._
 import com.amazon.speech.ui.{PlainTextOutputSpeech, Reprompt}
-import org.repwatch.alexa.handlers.{FindRepresentativeIntentHandler, FindSenatorsIntentHandler, UnknownIntentHandler}
+import org.repwatch.alexa.handlers.{FindRepresentativeIntentHandler, FindSenatorsIntentHandler, SetZipCodeIntentHandler, UnknownIntentHandler}
 import org.repwatch.models
 import org.repwatch.repositories.{LegislatorRepository, UserRepository}
 
@@ -45,6 +45,8 @@ class RepwatchSpeechlet(legislatorRepository: LegislatorRepository, userReposito
         FindSenatorsIntentHandler.handle(new FindSenatorsIntent(intentRequest), legislatorRepository, user)
       case RepwatchIntent.Intents.FindRepresentative =>
         FindRepresentativeIntentHandler.handle(new FindRepresentativeIntent(intentRequest), legislatorRepository, user)
+      case RepwatchIntent.Intents.SetZipCodeIntent =>
+        SetZipCodeIntentHandler.handle(new SetZipCodeIntent(intentRequest), user, userRepository)
       case _ => UnknownIntentHandler.handle(new UnknownIntent(intentRequest))
     }
   }

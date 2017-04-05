@@ -17,4 +17,6 @@ case class FindRepresentativeIntent(intentRequest: IntentRequest) extends Repwat
 
 case class FindSenatorsIntent(intentRequest: IntentRequest) extends RepwatchIntent
 
+case class SetZipCodeIntent(intentRequest: IntentRequest) extends RepwatchIntent
+
 case class UnknownIntent(intentRequest: IntentRequest) extends RepwatchIntent
