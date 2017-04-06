@@ -12,7 +12,6 @@ class InMemoryUserRepository extends UserRepository {
   }
 
   override def save(user: User): Future[User] = Future {
-    println(s"saving user ${user.id} with zipCode ${user.zipCode.value}")
     users.put(user.id.value, user)
 
     user

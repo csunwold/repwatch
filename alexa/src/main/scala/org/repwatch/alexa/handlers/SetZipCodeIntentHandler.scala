@@ -15,7 +15,6 @@ object SetZipCodeIntentHandler {
       .map(_.getValue)
       .flatMap(ZipCode(_))
       .map(zipCode => {
-        println(s"Saving zipcode: ${zipCode.value}")
         // TODO - Refactor this to isolate side effects
         session.setAttribute("ZipCode", zipCode.value)
 
