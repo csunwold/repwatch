@@ -6,7 +6,7 @@ An application for staying up to date with your Member's of Congress (MOC).
 #### Setup
 * Create an API key for Google's Civic API - https://console.cloud.google.com/apis/credentials
 * Create an API key for Propublica's Congress API
-* Create a configuration file called alexa/srcc/main/resource/repwatch.conf and put both API keys in the configuration file.
+* Create a configuration file called alexa/src/main/resource/repwatch.conf and put both API keys in the configuration file.
 Example:
 
 ```
