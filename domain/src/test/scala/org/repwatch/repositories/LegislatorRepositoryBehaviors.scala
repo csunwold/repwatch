@@ -8,7 +8,7 @@ import org.scalatest.Matchers._
 trait LegislatorRepositoryBehaviors { this: AsyncFlatSpec =>
   def repositoryWithoutLegislators(newRepo: => LegislatorRepository) = {
     it should "not return a legislator" in {
-      val futureLegislator = newRepo.locateSenators(ZipCode("98001"))
+      val futureLegislator = newRepo.locateSenators(new ZipCode("98001"))
 
       futureLegislator.map { legislators => legislators.length should be (0) }
     }
@@ -17,7 +17,7 @@ trait LegislatorRepositoryBehaviors { this: AsyncFlatSpec =>
   def repositoryWithLegislatorInLocation(newRepo: => LegislatorRepository,
                                          geoCoordinate: GeoCoordinate,
                                          knownLegislator: Legislator) = {
-    val futureLegislator = newRepo.locateSenators(ZipCode("98001"))
+    val futureLegislator = newRepo.locateSenators(new ZipCode("98001"))
 
     futureLegislator.map { legislators => legislators.head should be (knownLegislator)}
   }

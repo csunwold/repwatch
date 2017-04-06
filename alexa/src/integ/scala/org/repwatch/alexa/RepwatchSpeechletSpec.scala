@@ -41,7 +41,7 @@ class RepwatchSpeechletSpec extends AsyncFreeSpec with Matchers {
     "Given a FindSenatorIntent in Washington State" - {
       "Should return Senators Maria Cantwell and Patty Murray" in {
         val userRepository = new InMemoryUserRepository
-        val user = User(id = UserId("79a75932-c1d1-4a81-9b90-ebd019561d48"), zipCode = ZipCode("98101"))
+        val user = User(id = UserId("79a75932-c1d1-4a81-9b90-ebd019561d48"), zipCode = new ZipCode("98101"))
         userRepository
           .save(user)
           .map(_ => {
@@ -63,7 +63,7 @@ class RepwatchSpeechletSpec extends AsyncFreeSpec with Matchers {
     "Given a FindSenatorIntent in Oregon State" - {
       "Should return Senators Ron Wyden and Jeff Merkley" in {
         val userRepository = new InMemoryUserRepository
-        val user = User(id = UserId("79a75932-c1d1-4a81-9b90-ebd019561d48"), zipCode = ZipCode("97080"))
+        val user = User(id = UserId("79a75932-c1d1-4a81-9b90-ebd019561d48"), zipCode = new ZipCode("97080"))
         userRepository
           .save(user)
           .map(_ => {
@@ -85,7 +85,7 @@ class RepwatchSpeechletSpec extends AsyncFreeSpec with Matchers {
     "Given a FindRepresentativeIntent in 99203" - {
       "Should return congresswoman Cathy McMorris Rodgers" in {
         val userRepository = new InMemoryUserRepository
-        val user = User(id = UserId("79a75932-c1d1-4a81-9b90-ebd019561d48"), zipCode = ZipCode("99203"))
+        val user = User(id = UserId("79a75932-c1d1-4a81-9b90-ebd019561d48"), zipCode = new ZipCode("99203"))
         userRepository
           .save(user)
           .map(_ => {

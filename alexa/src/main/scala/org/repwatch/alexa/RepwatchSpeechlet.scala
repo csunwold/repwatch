@@ -4,6 +4,7 @@ import com.amazon.speech.speechlet._
 import com.amazon.speech.ui.{PlainTextOutputSpeech, Reprompt}
 import org.repwatch.alexa.handlers.{FindRepresentativeIntentHandler, FindSenatorsIntentHandler, SetZipCodeIntentHandler, UnknownIntentHandler}
 import org.repwatch.models
+import org.repwatch.models.{User, UserId, ZipCode}
 import org.repwatch.repositories.{LegislatorRepository, UserRepository}
 
 import scala.concurrent.Await
@@ -20,33 +21,39 @@ class RepwatchSpeechlet(legislatorRepository: LegislatorRepository, userReposito
   }
 
   override def onIntent(intentRequest: IntentRequest, session: Session): SpeechletResponse = {
-    findUser(session.getUser) match {
-      case Some(user) => handleAuthedIntent(intentRequest, user)
-      case None => handleUnAuthedIntent
+    findUser(session) match {
+      case Some(user) => handleAuthedIntent(intentRequest, session, user)
+      case None => handleUnAuthedIntent(intentRequest, session)
     }
   }
 
-  private def handleUnAuthedIntent = {
-    val output = new PlainTextOutputSpeech
-    output.setText("First, I need to know your zip code.")
+  private def handleUnAuthedIntent(intentRequest: IntentRequest, session: Session) = {
+    intentRequest.getIntent.getName match {
+      case RepwatchIntent.Intents.SetZipCodeIntent =>
+        SetZipCodeIntentHandler.handle(new SetZipCodeIntent(intentRequest), session, userRepository)
+      case _ => {
+        val output = new PlainTextOutputSpeech
+        output.setText("First, I need to know your zip code.")
 
-    val repromptSpeech = new PlainTextOutputSpeech
-    repromptSpeech.setText("You can say, my zip code is ")
-    // TODO - Give a zip code response
-    val reprompt = new Reprompt
-    reprompt.setOutputSpeech(repromptSpeech)
+        val repromptSpeech = new PlainTextOutputSpeech
+        repromptSpeech.setText("You can say, my zip code is ")
+        // TODO - Give a zip code response
+        val reprompt = new Reprompt
+        reprompt.setOutputSpeech(repromptSpeech)
 
-    SpeechletResponse.newAskResponse(output, reprompt)
+        SpeechletResponse.newAskResponse(output, reprompt)
+      }
+    }
   }
 
-  private def handleAuthedIntent(intentRequest: IntentRequest, user: models.User) = {
+  private def handleAuthedIntent(intentRequest: IntentRequest, session: Session, user: models.User) = {
     intentRequest.getIntent.getName match {
       case RepwatchIntent.Intents.FindSenators =>
         FindSenatorsIntentHandler.handle(new FindSenatorsIntent(intentRequest), legislatorRepository, user)
       case RepwatchIntent.Intents.FindRepresentative =>
         FindRepresentativeIntentHandler.handle(new FindRepresentativeIntent(intentRequest), legislatorRepository, user)
       case RepwatchIntent.Intents.SetZipCodeIntent =>
-        SetZipCodeIntentHandler.handle(new SetZipCodeIntent(intentRequest), user, userRepository)
+        SetZipCodeIntentHandler.handle(new SetZipCodeIntent(intentRequest), session, userRepository)
       case _ => UnknownIntentHandler.handle(new UnknownIntent(intentRequest))
     }
   }
@@ -61,10 +68,21 @@ class RepwatchSpeechlet(legislatorRepository: LegislatorRepository, userReposito
     response
   }
 
-  private def findUser(user: User): Option[org.repwatch.models.User] = {
-    val futureUser = userRepository.findUser(user.getUserId)
-    val maybeUser = Await.result(futureUser, 2 seconds)
+  private def findUser(session: Session): Option[org.repwatch.models.User] = {
+    val id = session.getUser.getUserId
+    Option(session.getAttribute("ZipCode"))
+      .map(z => z.asInstanceOf[String])
+      .filter(_.trim.isEmpty)
+      .flatMap(ZipCode(_))
+      .map(z => new User(id = UserId(id), zipCode = z))
+      .orElse({
+        val futureUser = userRepository.findUser(id)
+        val user = Await.result(futureUser, 2 seconds)
 
-    maybeUser
+        user.foreach(u => {
+          println(s"Found user ${u.id.value} with zip code ${u.zipCode.value}")
+        })
+        user
+      })
   }
 }

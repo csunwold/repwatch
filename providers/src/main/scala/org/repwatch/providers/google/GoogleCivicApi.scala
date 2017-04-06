@@ -29,6 +29,8 @@ class GoogleCivicApi(apiKey: ApiKey) {
       .addQueryParameter("includeOffices", "true")
       .addQueryParameter("roles", role)
 
+    println(s"Address being requested is ${zipCode.value}")
+
     val responseBody = Http(svc OK as.String)
 
     responseBody
