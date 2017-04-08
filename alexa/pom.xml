@@ -76,10 +76,12 @@
                                 <arg>-feature</arg>
                                 <arg>-unchecked</arg>
                                 <arg>-Xfuture</arg>
+                                <arg>-Xlint:missing-interpolator</arg>
                                 <arg>-Ywarn-dead-code</arg>
                                 <arg>-Ywarn-numeric-widen</arg>
                                 <arg>-Ywarn-value-discard</arg>
                                 <arg>-Ywarn-unused</arg>
+                                <arg>-Ywarn-unused-import</arg>
                             </args>
                         </configuration>
                     </execution>
