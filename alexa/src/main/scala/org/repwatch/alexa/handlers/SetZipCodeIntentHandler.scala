@@ -8,6 +8,7 @@ import org.repwatch.repositories.UserRepository
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.util.{Failure, Success, Try}
 
 object SetZipCodeIntentHandler {
   def handle(intent: SetZipCodeIntent, session: Session, userRepository: UserRepository) : SpeechletResponse = {
@@ -17,19 +18,30 @@ object SetZipCodeIntentHandler {
 
     zipCode match {
       case Some(value) => {
-        // TODO - What if the save fails?
-        saveZipCode(session, userRepository, value)
+        Try(saveZipCode(session, userRepository, value)) match {
+          case Success(_) => {
+            // TODO - Was the user trying to do something previously in the session? If so, we should do that now that we
+            // have a valid zip code.
+            val outputSpeech = new PlainTextOutputSpeech
+            outputSpeech.setText("Thank you")
 
-        // TODO - Was the user trying to do something previously in the session? If so, we should do that now that we
-        // have a valid zip code.
-        val outputSpeech = new PlainTextOutputSpeech
-        outputSpeech.setText("Thank you")
+            val response = new SpeechletResponse()
+            response.setShouldEndSession(false)
+            response.setOutputSpeech(outputSpeech)
 
-        val response = new SpeechletResponse()
-        response.setShouldEndSession(false)
-        response.setOutputSpeech(outputSpeech)
+            response
+          }
+          case Failure(_) => {
+            val outputSpeech = new PlainTextOutputSpeech
+            outputSpeech.setText("Something went wrong saving your zip code. Please try again later.")
 
-        response
+            val response = new SpeechletResponse()
+            response.setShouldEndSession(true)
+            response.setOutputSpeech(outputSpeech)
+
+            response
+          }
+        }
       }
       case None => {
         invalidZipCodeResponse
