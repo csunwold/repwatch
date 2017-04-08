@@ -14,7 +14,7 @@ object FindRepresentativeIntentHandler {
              legislatorRepository: LegislatorRepository,
              user: User) : SpeechletResponse = {
     val representativeFuture = legislatorRepository.locateRepresentative(user.zipCode)
-    val maybeRepresentative = Await.result(representativeFuture, 5 seconds)
+    val maybeRepresentative = Await.result(representativeFuture, 5.seconds)
 
     // TODO - Add test coverage for error scenarios
     val outputText = maybeRepresentative match {

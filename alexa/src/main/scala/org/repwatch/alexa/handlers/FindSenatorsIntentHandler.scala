@@ -13,7 +13,7 @@ object FindSenatorsIntentHandler {
   def handle(intent: FindSenatorsIntent, legislatorRepository: LegislatorRepository, user: User) : SpeechletResponse = {
 
     val senatorsFuture = legislatorRepository.locateSenators(user.zipCode)
-    val senators = Await.result(senatorsFuture, 5 seconds)
+    val senators = Await.result(senatorsFuture, 5.seconds)
     val outputText = s"Your senators are ${senators(0).toString} and ${senators(1).toString}"
 
     val response = new SpeechletResponse
