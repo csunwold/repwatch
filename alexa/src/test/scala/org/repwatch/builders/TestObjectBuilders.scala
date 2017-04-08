@@ -2,13 +2,17 @@ package org.repwatch.builders
 
 import java.util.{Date, Locale}
 
-import com.amazon.speech.slu.Intent
+import com.amazon.speech.slu.{Intent, Slot}
 import com.amazon.speech.speechlet.{IntentRequest, Session, User}
 
+import scala.collection.JavaConverters._
+
 object TestObjectBuilders {
-  def buildIntent(name: String) = {
+  def buildIntent(name: String,
+                  slots: Map[String, Slot] = Map.empty) = {
     Intent.builder()
       .withName(name)
+      .withSlots(slots.asJava)
       .build()
   }
 
@@ -29,6 +33,14 @@ object TestObjectBuilders {
     Session.builder()
       .withSessionId("59a3b1c4-f8b3-4469-ac1c-6dbf3d059bce")
       .withUser(buildUser(userId))
+      .build()
+  }
+
+  def buildSlot(name: String, value: String) = {
+    Slot
+      .builder()
+      .withName(name)
+      .withValue(value)
       .build()
   }
 

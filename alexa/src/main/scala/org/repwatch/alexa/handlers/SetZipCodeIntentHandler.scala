@@ -11,21 +11,21 @@ import scala.concurrent.duration._
 
 object SetZipCodeIntentHandler {
   def handle(intent: SetZipCodeIntent, session: Session, userRepository: UserRepository) : SpeechletResponse = {
-    val maybeUser = Option(intent.intentRequest.getIntent.getSlot("ZipCode"))
+    val zipCode = Option(intent.intentRequest.getIntent.getSlot("ZipCode"))
       .map(_.getValue)
       .flatMap(ZipCode(_))
-      .map(zipCode => {
-        // TODO - Refactor this to isolate side effects
-        session.setAttribute("ZipCode", zipCode.value)
 
-        val user = new User(id = UserId(session.getUser.getUserId), zipCode = zipCode)
+    zipCode match {
+      case Some(value) => {
+        session.setAttribute("ZipCode", value)
+
+        val user = new User(id = UserId(session.getUser.getUserId), zipCode = value)
         val futureUser = userRepository.save(user)
 
         Await.result(futureUser, 3 seconds)
-      })
 
-    maybeUser match {
-      case Some(user) => {
+        // TODO - Was the user trying to do something previously in the session? If so, we should do that now that we
+        // have a valid zip code.
         val outputSpeech = new PlainTextOutputSpeech
         outputSpeech.setText("Thank you")
 
@@ -37,10 +37,8 @@ object SetZipCodeIntentHandler {
       }
       case None => {
         val output = new PlainTextOutputSpeech
-        output.setText("That didn't work.")
-
         val repromptSpeech = new PlainTextOutputSpeech
-        repromptSpeech.setText("Can you please tell me your zip code again?")
+        repromptSpeech.setText("That zip code is not valid. Please say your zip code again. For example, <say-as interpret-as=\"digits\">20500</say-as>")
         // TODO - Give a zip code response
         val reprompt = new Reprompt
         reprompt.setOutputSpeech(repromptSpeech)
@@ -48,7 +46,5 @@ object SetZipCodeIntentHandler {
         SpeechletResponse.newAskResponse(output, reprompt)
       }
     }
-
-
   }
 }
