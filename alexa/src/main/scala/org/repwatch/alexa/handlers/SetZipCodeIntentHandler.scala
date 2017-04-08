@@ -17,12 +17,8 @@ object SetZipCodeIntentHandler {
 
     zipCode match {
       case Some(value) => {
-        session.setAttribute("ZipCode", value)
-
-        val user = new User(id = UserId(session.getUser.getUserId), zipCode = value)
-        val futureUser = userRepository.save(user)
-
-        Await.result(futureUser, 3 seconds)
+        // TODO - What if the save fails?
+        saveZipCode(session, userRepository, value)
 
         // TODO - Was the user trying to do something previously in the session? If so, we should do that now that we
         // have a valid zip code.
@@ -36,15 +32,27 @@ object SetZipCodeIntentHandler {
         response
       }
       case None => {
-        val output = new PlainTextOutputSpeech
-        val repromptSpeech = new PlainTextOutputSpeech
-        repromptSpeech.setText("That zip code is not valid. Please say your zip code again. For example, <say-as interpret-as=\"digits\">20500</say-as>")
-        // TODO - Give a zip code response
-        val reprompt = new Reprompt
-        reprompt.setOutputSpeech(repromptSpeech)
-
-        SpeechletResponse.newAskResponse(output, reprompt)
+        invalidZipCodeResponse
       }
     }
+  }
+
+  private def invalidZipCodeResponse = {
+    val output = new PlainTextOutputSpeech
+    val repromptSpeech = new PlainTextOutputSpeech
+    repromptSpeech.setText("That zip code is not valid. Please say your zip code again. For example, <say-as interpret-as=\"digits\">20500</say-as>")
+    val reprompt = new Reprompt
+    reprompt.setOutputSpeech(repromptSpeech)
+
+    SpeechletResponse.newAskResponse(output, reprompt)
+  }
+
+  private def saveZipCode(session: Session, userRepository: UserRepository, value: ZipCode) = {
+    session.setAttribute("ZipCode", value)
+
+    val user = new User(id = UserId(session.getUser.getUserId), zipCode = value)
+    val futureUser = userRepository.save(user)
+
+    Await.result(futureUser, 3 seconds)
   }
 }
