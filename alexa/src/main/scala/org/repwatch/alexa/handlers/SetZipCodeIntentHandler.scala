@@ -8,47 +8,67 @@ import org.repwatch.repositories.UserRepository
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.util.{Failure, Success, Try}
 
 object SetZipCodeIntentHandler {
   def handle(intent: SetZipCodeIntent, session: Session, userRepository: UserRepository) : SpeechletResponse = {
-    val maybeUser = Option(intent.intentRequest.getIntent.getSlot("ZipCode"))
+    val zipCode = Option(intent.intentRequest.getIntent.getSlot("ZipCode"))
       .map(_.getValue)
       .flatMap(ZipCode(_))
-      .map(zipCode => {
-        // TODO - Refactor this to isolate side effects
-        session.setAttribute("ZipCode", zipCode.value)
 
-        val user = new User(id = UserId(session.getUser.getUserId), zipCode = zipCode)
-        val futureUser = userRepository.save(user)
+    zipCode match {
+      case Some(value) => {
+        Try(saveZipCode(session, userRepository, value)) match {
+          case Success(_) => {
+            // TODO - Was the user trying to do something previously in the session? If so, we should do that now that we
+            // have a valid zip code.
+            val outputSpeech = new PlainTextOutputSpeech
+            outputSpeech.setText("Thank you")
 
-        Await.result(futureUser, 3 seconds)
-      })
+            val response = new SpeechletResponse()
+            response.setShouldEndSession(false)
+            response.setOutputSpeech(outputSpeech)
 
-    maybeUser match {
-      case Some(user) => {
-        val outputSpeech = new PlainTextOutputSpeech
-        outputSpeech.setText("Thank you")
-
-        val response = new SpeechletResponse()
-        response.setShouldEndSession(false)
-        response.setOutputSpeech(outputSpeech)
-
-        response
+            response
+          }
+          case Failure(_) => {
+            failedSavingZipCodeResponse
+          }
+        }
       }
       case None => {
-        val output = new PlainTextOutputSpeech
-        output.setText("That didn't work.")
-
-        val repromptSpeech = new PlainTextOutputSpeech
-        repromptSpeech.setText("Can you please tell me your zip code again?")
-        // TODO - Give a zip code response
-        val reprompt = new Reprompt
-        reprompt.setOutputSpeech(repromptSpeech)
-
-        SpeechletResponse.newAskResponse(output, reprompt)
+        invalidZipCodeResponse
       }
     }
+  }
 
+  private def failedSavingZipCodeResponse = {
+    val outputSpeech = new PlainTextOutputSpeech
+    outputSpeech.setText("Something went wrong saving your zip code. Please try again later.")
 
+    val response = new SpeechletResponse()
+    response.setShouldEndSession(true)
+    response.setOutputSpeech(outputSpeech)
+
+    response
+  }
+
+  private def invalidZipCodeResponse = {
+    val output = new PlainTextOutputSpeech
+    val repromptSpeech = new PlainTextOutputSpeech
+    repromptSpeech.setText("That zip code is not valid. Please say your zip code again. For example, <say-as interpret-as=\"digits\">20500</say-as>")
+    val reprompt = new Reprompt
+    reprompt.setOutputSpeech(repromptSpeech)
+
+    SpeechletResponse.newAskResponse(output, reprompt)
+  }
+
+  private def saveZipCode(session: Session, userRepository: UserRepository, value: ZipCode) = {
+    session.setAttribute("ZipCode", value)
+
+    val user = new User(id = UserId(session.getUser.getUserId), zipCode = value)
+    val futureUser = userRepository.save(user)
+
+    Await.result(futureUser, 3 seconds)
   }
 }
