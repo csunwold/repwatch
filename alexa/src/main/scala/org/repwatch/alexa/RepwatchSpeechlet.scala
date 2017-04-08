@@ -8,7 +8,7 @@ import org.repwatch.models.{User, UserId, ZipCode}
 import org.repwatch.repositories.{LegislatorRepository, UserRepository}
 
 import scala.concurrent.Await
-import scala.concurrent.duration._
+import scala.concurrent.duration.DurationInt
 
 class RepwatchSpeechlet(legislatorRepository: LegislatorRepository, userRepository: UserRepository) extends Speechlet {
   override def onSessionEnded(sessionEndedRequest: SessionEndedRequest, session: Session): Unit = {

@@ -5,3 +5,5 @@ target
 
 # Local configuration file
 alexa/src/main/resources/repwatch.conf
+
+scalastyle-output.xml
