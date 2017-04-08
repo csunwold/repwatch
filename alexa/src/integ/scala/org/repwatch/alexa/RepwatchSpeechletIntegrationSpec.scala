@@ -15,8 +15,8 @@ import org.scalatest.{AsyncFreeSpec, Matchers}
   * Because they are complete end to end tests the data will change from time to time as elections and other vacancies
   * happen. These tests should only be ran as needed.
   */
-class RepwatchSpeechletSpec extends AsyncFreeSpec with Matchers {
-  var config : ApplicationConfig = new ApplicationConfig
+class RepwatchSpeechletIntegrationSpec extends AsyncFreeSpec with Matchers {
+  val config : ApplicationConfig = new ApplicationConfig
   val googleApiKey = new ApiKey(config.googleApiKey)
   val googleClient = new GoogleCivicApi(googleApiKey)
   val legislatorRepository = new GoogleLegislatorRepository(googleClient)
