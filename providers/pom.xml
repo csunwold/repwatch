@@ -45,6 +45,15 @@
             </goals>
             <configuration>
               <args>
+                <arg>-deprecation</arg>
+                <arg>-feature</arg>
+                <arg>-unchecked</arg>
+                <arg>-Xfatal-warnings</arg>
+                <arg>-Xfuture</arg>
+                <arg>-Ywarn-dead-code</arg>
+                <arg>-Ywarn-numeric-widen</arg>
+                <arg>-Ywarn-value-discard</arg>
+                <arg>-Ywarn-unused</arg>
               </args>
             </configuration>
           </execution>

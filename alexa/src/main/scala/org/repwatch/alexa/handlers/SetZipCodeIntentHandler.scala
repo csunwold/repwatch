@@ -69,6 +69,6 @@ object SetZipCodeIntentHandler {
     val user = new User(id = UserId(session.getUser.getUserId), zipCode = value)
     val futureUser = userRepository.save(user)
 
-    Await.result(futureUser, 3 seconds)
+    Await.result(futureUser, 3.seconds)
   }
 }

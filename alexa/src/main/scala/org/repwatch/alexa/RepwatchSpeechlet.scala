@@ -57,7 +57,7 @@ class RepwatchSpeechlet(legislatorRepository: LegislatorRepository, userReposito
       .map(z => new User(id = UserId(id), zipCode = z))
       .orElse({
         val futureUser = userRepository.findUser(id)
-        Await.result(futureUser, 2 seconds)
+        Await.result(futureUser, 2.seconds)
       })
   }
 
