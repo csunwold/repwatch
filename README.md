@@ -1,4 +1,4 @@
-# repwatch ![build status](https://travis-ci.org/csunwold/repwatch.svg?branch=master)
+# repwatch [![Build Status](https://travis-ci.org/csunwold/repwatch.svg?branch=master)](https://travis-ci.org/csunwold/repwatch)
 An application for staying up to date with your Member's of Congress (MOC). 
 
 ## Interfaces
