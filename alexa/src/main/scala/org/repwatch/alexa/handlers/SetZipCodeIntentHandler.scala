@@ -32,14 +32,7 @@ object SetZipCodeIntentHandler {
             response
           }
           case Failure(_) => {
-            val outputSpeech = new PlainTextOutputSpeech
-            outputSpeech.setText("Something went wrong saving your zip code. Please try again later.")
-
-            val response = new SpeechletResponse()
-            response.setShouldEndSession(true)
-            response.setOutputSpeech(outputSpeech)
-
-            response
+            failedSavingZipCodeResponse
           }
         }
       }
@@ -47,6 +40,17 @@ object SetZipCodeIntentHandler {
         invalidZipCodeResponse
       }
     }
+  }
+
+  private def failedSavingZipCodeResponse = {
+    val outputSpeech = new PlainTextOutputSpeech
+    outputSpeech.setText("Something went wrong saving your zip code. Please try again later.")
+
+    val response = new SpeechletResponse()
+    response.setShouldEndSession(true)
+    response.setOutputSpeech(outputSpeech)
+
+    response
   }
 
   private def invalidZipCodeResponse = {
