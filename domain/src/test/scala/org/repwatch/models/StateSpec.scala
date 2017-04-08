@@ -2,6 +2,7 @@ package org.repwatch.models
 
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
 
+// scalastyle:off null
 class StateSpec extends FlatSpec with Matchers with OptionValues {
   behavior of "apply"
 

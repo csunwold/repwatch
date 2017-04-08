@@ -1,10 +1,15 @@
 package org.repwatch.repositories
 
-import org.repwatch.models._
+import org.repwatch.models.ContactInformation
+import org.repwatch.models.EmailAddress
+import org.repwatch.models.Name
+import org.repwatch.models.PhoneNumber
+import org.repwatch.models.Representative
+import org.repwatch.models.Senator
+import org.repwatch.models.ZipCode
 import org.repwatch.providers.google.GoogleCivicApi
 
 import scala.concurrent.Future
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 // TODO - Handle vacant offices

@@ -1,7 +1,11 @@
 package org.repwatch.providers.google
 
-import dispatch._
-import net.liftweb.json._
+import dispatch.as
+import dispatch.Future
+import dispatch.Http
+import dispatch.url
+import net.liftweb.json.DefaultFormats
+import net.liftweb.json.JsonParser
 import org.repwatch.models.ZipCode
 import org.repwatch.providers.google.models.RepresentativeInfoQueryResponse
 

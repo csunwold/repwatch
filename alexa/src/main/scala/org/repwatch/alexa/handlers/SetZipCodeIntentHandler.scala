@@ -2,17 +2,17 @@ package org.repwatch.alexa.handlers
 
 import com.amazon.speech.speechlet.{Session, SpeechletResponse}
 import com.amazon.speech.ui.{PlainTextOutputSpeech, Reprompt}
-import org.repwatch.alexa.SetZipCodeIntent
+import org.repwatch.alexa.{SetZipCodeIntent, SlotNames}
 import org.repwatch.models.{User, UserId, ZipCode}
 import org.repwatch.repositories.UserRepository
 
 import scala.concurrent.Await
-import scala.concurrent.duration._
+import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success, Try}
 
 object SetZipCodeIntentHandler {
   def handle(intent: SetZipCodeIntent, session: Session, userRepository: UserRepository) : SpeechletResponse = {
-    val zipCode = Option(intent.intentRequest.getIntent.getSlot("ZipCode"))
+    val zipCode = Option(intent.intentRequest.getIntent.getSlot(SlotNames.ZipCode))
       .map(_.getValue)
       .flatMap(ZipCode(_))
 

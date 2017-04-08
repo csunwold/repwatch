@@ -2,11 +2,10 @@ package org.repwatch.models
 
 object ZipCode {
   def apply(value: String) : Option[ZipCode] = {
-    if (value != null && value.trim != "" && value.trim.matches("^\\d{5}(?:[-\\s]\\d{4})?$")) {
-      Some(new ZipCode(value))
-    } else {
-      None
-    }
+    Option(value)
+      .map(_.trim)
+      .filter(_.matches("^\\d{5}(?:[-\\s]\\d{4})?$"))
+      .map(new ZipCode(_))
   }
 }
 

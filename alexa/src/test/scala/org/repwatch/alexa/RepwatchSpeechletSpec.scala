@@ -2,7 +2,10 @@ package org.repwatch.alexa
 
 import com.amazon.speech.ui.PlainTextOutputSpeech
 import org.repwatch.StubLegislatorRepository
-import org.repwatch.builders.TestObjectBuilders._
+import org.repwatch.builders.TestObjectBuilders.buildIntent
+import org.repwatch.builders.TestObjectBuilders.buildIntentRequest
+import org.repwatch.builders.TestObjectBuilders.buildSession
+import org.repwatch.builders.TestObjectBuilders.buildSlot
 import org.repwatch.models.User
 import org.repwatch.repositories.{InMemoryUserRepository, UserRepository}
 import org.scalatest.{AsyncFreeSpec, Matchers}
@@ -10,13 +13,15 @@ import org.scalatest.{AsyncFreeSpec, Matchers}
 import scala.concurrent.Future
 
 class RepwatchSpeechletSpec extends AsyncFreeSpec with Matchers {
+  val UserId = "385452ca-afee-4c18-af2c-6589d54b29b8"
+
   "FindSenatorIntent Handling" - {
     "Given a FindSenatorIntent without a recognized user" - {
       "Should ask for a zip code" in {
         val speechlet = new RepwatchSpeechlet(new StubLegislatorRepository(), new InMemoryUserRepository)
 
         val intentRequest = buildIntentRequest(intent = buildIntent(RepwatchIntent.Intents.FindSenators))
-        val session = buildSession(userId = "385452ca-afee-4c18-af2c-6589d54b29b8")
+        val session = buildSession(userId = UserId)
         val response = speechlet.onIntent(intentRequest, session)
 
         response.getOutputSpeech.getClass should be(classOf[PlainTextOutputSpeech])
@@ -35,8 +40,8 @@ class RepwatchSpeechletSpec extends AsyncFreeSpec with Matchers {
         val intentRequest = buildIntentRequest(
           intent = buildIntent(
             name = RepwatchIntent.Intents.SetZipCodeIntent,
-            slots = Map(("ZipCode", buildSlot("ZipCode", "")))))
-        val session = buildSession(userId = "385452ca-afee-4c18-af2c-6589d54b29b8")
+            slots = Map((SlotNames.ZipCode, buildSlot(SlotNames.ZipCode, "")))))
+        val session = buildSession(userId = UserId)
         val response = speechlet.onIntent(intentRequest, session)
 
         response.getOutputSpeech.getClass should be(classOf[PlainTextOutputSpeech])
@@ -61,8 +66,8 @@ class RepwatchSpeechletSpec extends AsyncFreeSpec with Matchers {
         val intentRequest = buildIntentRequest(
           intent = buildIntent(
             name = RepwatchIntent.Intents.SetZipCodeIntent,
-            slots = Map(("ZipCode", buildSlot("ZipCode", "20500")))))
-        val session = buildSession(userId = "385452ca-afee-4c18-af2c-6589d54b29b8")
+            slots = Map((SlotNames.ZipCode, buildSlot(SlotNames.ZipCode, "20500")))))
+        val session = buildSession(userId = UserId)
         val response = speechlet.onIntent(intentRequest, session)
 
         response.getOutputSpeech.getClass should be(classOf[PlainTextOutputSpeech])

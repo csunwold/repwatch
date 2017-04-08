@@ -3,11 +3,11 @@ package org.repwatch.alexa.handlers
 import com.amazon.speech.speechlet.SpeechletResponse
 import com.amazon.speech.ui.PlainTextOutputSpeech
 import org.repwatch.alexa.FindSenatorsIntent
-import org.repwatch.models._
+import org.repwatch.models.User
 import org.repwatch.repositories.LegislatorRepository
 
 import scala.concurrent.Await
-import scala.concurrent.duration._
+import scala.concurrent.duration.DurationInt
 
 object FindSenatorsIntentHandler {
   def handle(intent: FindSenatorsIntent, legislatorRepository: LegislatorRepository, user: User) : SpeechletResponse = {

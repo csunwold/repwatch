@@ -57,11 +57,9 @@ object State {
   )
 
   def apply(code: String): Option[State] = {
-    if (code == null || !States.contains(code)) {
-      None
-    } else {
-      Some(new State(code))
-    }
+    Option(code)
+      .filter(States.contains)
+      .map(new State(_))
   }
 }
 
