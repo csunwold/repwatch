@@ -10,6 +10,14 @@
     <artifactId>repwatch</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.repwatch.domain</groupId>
+      <artifactId>repwatch-domain</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
   
   <build>
     <sourceDirectory>src/main/scala</sourceDirectory>
