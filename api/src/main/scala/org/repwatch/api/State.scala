@@ -2,9 +2,11 @@ package org.repwatch.api
 
 import org.repwatch.models.{Senator, User, UserId}
 
+import scala.util.{Failure, Success, Try}
+
 sealed trait State
 
-case class UserIsNotRecognized() extends State
+case class UserIsNotRecognized(intentName: String) extends State
 case class UserIsRecognized() extends State
 case class UserCouldNotBeSaved() extends State
 case class InvalidZipCode() extends State
@@ -13,19 +15,18 @@ case class SenatorsNotFound() extends State
 case class RepresentativeFound() extends State
 case class RepresentativeNotFound() extends State
 case class EndSession() extends State
-case class ErrorOccurred() extends State
+case class ErrorOccurred(error: Throwable) extends State
 
 sealed trait Event {
   def userId: UserId
 }
 
 case class IntentReceived(userId: UserId, name: String) extends Event
-case class UserSaved(userId: UserId, intent: Option[Intent]) extends Event
 
 sealed trait Intent extends Event
 case class FindSenators(userId: UserId, user: User) extends Intent
 case class FindRepresentative(userId: UserId, user: User) extends Intent
-case class SaveUser(userId: UserId, user: User) extends Intent
+case class SaveUser(userId: UserId, user: User, originalIntent: Option[Intent]) extends Intent
 case class UnrecognizedIntent(userId: UserId) extends Intent
 
 object Repwatch {
@@ -35,13 +36,17 @@ object Repwatch {
         findUser(userId)
           .map(user => getIntent(name, user))
           .map(intent => onEvent(intent))
-          .getOrElse(new UserIsNotRecognized)
+          .getOrElse(UserIsNotRecognized(name))
       }
-      case UserSaved(_, intent) => intent.map(onEvent).getOrElse(new EndSession)
       case FindSenators(_, user) => findSenators(user)
       case FindRepresentative(_, user) => findRepresentative(user)
-      case SaveUser(_, user) =>
-      case UnrecognizedIntent(_) => new ErrorOccurred
+      case SaveUser(_, user, originalIntent) => {
+        saveUser(user) match {
+          case Success(_) => originalIntent.map(onEvent).getOrElse(EndSession())
+          case Failure(throwable) => ErrorOccurred(throwable)
+        }
+      }
+      case UnrecognizedIntent(_) => ErrorOccurred(new Exception("Unrecognized Intent"))
     }
   }
 
@@ -60,8 +65,8 @@ object Repwatch {
     new RepresentativeNotFound
   }
 
-  def saveUser(user: User) = {
-
+  def saveUser(user: User) = Try {
+    
   }
 
   def getIntent(name: String, user: User): Intent = {
@@ -69,7 +74,7 @@ object Repwatch {
     name match {
       case "FindSenators" => new FindSenators(user.id, user)
       case "FindRepresentative" => new FindRepresentative(user.id, user)
-      case "SetZipCode" => new SaveUser(user.id, user)
+      case "SetZipCode" => new SaveUser(user.id, user, None)
       case _ => new UnrecognizedIntent(user.id)
     }
   }
